@@ -29,9 +29,7 @@ class AuthController extends Controller
             'password' => bcrypt($request->password),
         ]);
 
-        $token = JWTAuth::fromUser($user);
-
-        return response()->json(compact('user', 'token'), 201);
+        return response()->json(compact('user'), 201);
     }
 
     /**
@@ -69,18 +67,16 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         try {
-            $token = $request->bearerToken() ?? $request->input('token');
-
+            $token = JWTAuth::getToken();
             if (!$token) {
-                return response()->json(['error' => 'Token not provided'], 401);
+                return response()->json(['error' => 'Token not provided.'], 400);
             }
 
-            JWTAuth::parseToken($token);
-            JWTAuth::invalidate(new \Tymon\JWTAuth\Token($token));
+            JWTAuth::invalidate($token);
 
-            return response()->json(['message' => 'Successfully logged out']);
+            return response()->json(['message' => 'Logout successful!']);
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Failed to logout, please try again', 'message' => $e->getMessage()], 500);
+            return response()->json(['error' => 'Failed to validate token.'], 500);
         }
     }
 }
