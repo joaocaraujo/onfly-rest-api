@@ -175,4 +175,33 @@ class ExpensesControllerTest extends TestCase
         $response = $this->postJson('/api/expenses', $expenseData);
         $response->assertStatus(401);
     }
+    
+    /**
+     * Test if user cannot view expense when not authorized.
+     */
+    public function testUserCannotViewExpenseWhenNotAuthorized()
+    {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $expense = Expenses::factory()->create(['user_id' => $otherUser->id]);
+        $this->actingAs($user);
+    
+        $response = $this->getJson("/api/expenses/{$expense->id}");
+    
+        $response->assertStatus(403);
+    }
+
+    /**
+     * Test the response for a non-existent expense.
+     */
+    public function testResponseForNonExistentExpense()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+    
+        $nonExistentExpenseId = 99999;
+        $response = $this->getJson("/api/expenses/{$nonExistentExpenseId}");
+    
+        $response->assertStatus(404);
+    }
 }
