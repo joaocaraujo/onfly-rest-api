@@ -58,7 +58,7 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getJWTIdentifier()
     {
-        return $this->getKey(); // Retorna a chave primária do usuário
+        return $this->getKey();
     }
 
     /**
@@ -68,6 +68,6 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getJWTCustomClaims()
     {
-        return []; // Retorna um array de claims personalizadas, se necessário
+        return [];
     }
 }
