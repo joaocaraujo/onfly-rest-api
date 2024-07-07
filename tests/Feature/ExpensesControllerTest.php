@@ -40,28 +40,6 @@ class ExpensesControllerTest extends TestCase
     }
 
     /**
-     * Test if user can create an expense.
-     */
-    public function testUserCanCreateExpense()
-    {
-        $user = User::factory()->create();
-        $token = auth()->login($user);
-
-        $expenseData = [
-            'description' => $this->faker->word,
-            'value' => $this->faker->randomNumber(2),
-            'date' => $this->faker->date(),
-        ];
-
-        $response = $this->withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-        ])->postJson('/api/expenses', $expenseData);
-
-        $response->assertStatus(201);
-        $this->assertDatabaseHas('expenses', $expenseData);
-    }
-
-    /**
      * Test expenses structure.
      */
     public function testUserCanViewTheirExpensesStructure()
@@ -137,5 +115,64 @@ class ExpensesControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson(['data' => []]);
+    }
+
+    /**
+     * Test if user can create an expense.
+     */
+    public function testUserCanCreateExpense()
+    {
+        $user = User::factory()->create();
+        $token = auth()->login($user);
+
+        $expenseData = [
+            'description' => $this->faker->word,
+            'value' => $this->faker->randomNumber(2),
+            'date' => $this->faker->date(),
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/expenses', $expenseData);
+
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('expenses', $expenseData);
+    }
+
+    /**
+     * Test if storing an expense requires valid data.
+     */
+    public function testStoreExpenseRequiresValidData()
+    {
+        $user = User::factory()->create();
+        $token = auth()->login($user);
+
+        $invalidExpenseData = [
+            'description' => '',
+            'date' => 'not_a_date',
+            'value' => 'not_a_number',
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+        ])->postJson('/api/expenses', $invalidExpenseData);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['description', 'date', 'value']);
+    }
+
+    /**
+     * Test if storing an expense requires authentication.
+     */
+    public function testStoreExpenseRequiresAuthentication()
+    {
+        $expenseData = [
+            'description' => 'Teste',
+            'value' => 100,
+            'date' => '2023-01-01',
+        ];
+    
+        $response = $this->postJson('/api/expenses', $expenseData);
+        $response->assertStatus(401);
     }
 }
