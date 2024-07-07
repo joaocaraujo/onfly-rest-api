@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Carbon\Carbon;
 
 class ExpensesResource extends JsonResource
 {
@@ -17,8 +18,8 @@ class ExpensesResource extends JsonResource
         return [
             'id' => $this->id,
             'description' => $this->description,
-            'date' => $this->date->format('Y-m-d'),
-            'amount' => $this->amount,
+            'date' => Carbon::parse($this->date)->format('Y-m-d'),
+            'value' => $this->value,
             'user' => $this->user->only(['id', 'name', 'email']),
         ];
     }
