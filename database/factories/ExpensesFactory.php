@@ -4,11 +4,12 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use App\Models\Expenses;
 use App\Models\User;
 
-class UserFactory extends Factory
+class ExpensesFactory extends Factory
 {
-    protected $model = User::class;
+    protected $model = Expenses::class;
 
     /**
      * Define the model's default state.
@@ -18,11 +19,10 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->name(),
-            'email' => $this->faker->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => bcrypt('password'),
-            'remember_token' => Str::random(10),
+            'description' => $this->faker->sentence,
+            'date' => $this->faker->date,
+            'value' => $this->faker->randomFloat(2, 10, 1000),
+            'user_id' => User::factory(),
         ];
     }
 
