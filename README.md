@@ -1,64 +1,93 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+## Running the Project
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+To get the project up and running with Docker, follow these simple steps:
 
-## About Laravel
+1. **Build the Docker Container**: First, you need to build the Docker container for the project. Open your terminal, navigate to the project directory, and run the following command:
+   ```sh
+   docker-compose up --build
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+2. **Accessing the Application**: Once the Docker containers are up and running, you can access the Laravel application by visiting http://localhost:8080 in your web browser. This is the default port that the Laravel application runs on when using Docker.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+3. **Running Database Migrations**: To set up your database with the necessary tables and data, you'll need to run the Laravel migrations. You can do this by executing the following command:
+   ```sh
+   php artisan migrate
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## API Routes
 
-## Learning Laravel
+This project uses Laravel's resource routing to handle API requests, with custom routes for user authentication and resource routes for `expenses`. Below are the basic routes available, including the HTTP verbs and the corresponding actions.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### User Authentication Routes
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Register**: `POST /api/register`
+  - Registers a new user.
+  - **Body**:
+    ```json
+    {
+      "name": "name",
+      "email": "example@example.com",
+      "password": "123456",
+      "password_confirmation": "123456"
+    }
+    ```
+- **Login**: `POST /api/login`
+  - Authenticates the user and returns a token.
+  - **Body**:
+    ```json
+    {
+      "email": "example@example.com",
+      "password": "123456"
+    }
+    ```
+- **Logout**: `POST /api/logout`
+  - Logs out the user by invalidating the token.
+  - **Authentication**: Bearer Token
 
-## Laravel Sponsors
+### Expenses Routes
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+- **List all expenses**: `GET /api/expenses`
+  - Retrieves a list of all expenses.
+  - **Authentication**: Bearer Token
 
-### Premium Partners
+- **Create a new expense**: `POST /api/expenses`
+  - Creates a new expense with the provided data.
+  - **Authentication**: Bearer Token
+  - **Body**:
+    ```json
+    {
+      "description": "example",
+      "value": 100.99,
+      "date": "2024-04-30"
+    }
+    ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+- **Show a specific expense**: `GET /api/expenses/{id}`
+  - Retrieves the details of a specific expense.
+  - **Authentication**: Bearer Token
 
-## Contributing
+- **Update an expense**: `PUT/PATCH /api/expenses/{id}`
+  - Updates the specified expense with the provided data.
+  - **Authentication**: Bearer Token
+  - **Body**:
+    ```json
+    {
+      "description": "new example",
+      "value": 1.55,
+      "date": "2024-01-05"
+    }
+    ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- **Delete an expense**: `DELETE /api/expenses/{id}`
+  - Deletes the specified expense.
+  - **Authentication**: Bearer Token
 
-## Code of Conduct
+## Email Simulation with MailHog
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+For this project, we've integrated MailHog to simulate the email sending process. This is particularly useful for testing email notifications received by users upon registering or creating a new expense, without the need to set up a real email server.
 
-## Security Vulnerabilities
+### Accessing MailHog
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+To view the emails sent by the application, you can access the MailHog web interface by visiting:
 
-## License
+- **MailHog Web Interface**: [http://localhost:8025/#](http://localhost:8025/#)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MailHog runs on port 8025 by default, and you can use this interface to review all emails sent during your testing process.
